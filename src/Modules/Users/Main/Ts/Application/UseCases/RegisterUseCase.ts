@@ -1,4 +1,6 @@
-export default class RegisterUseCase
+
+//command
+export default class RegisterCommand
 {
     constructor (public email: string, public password: string)
     { }

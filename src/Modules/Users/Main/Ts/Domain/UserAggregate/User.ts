@@ -15,7 +15,6 @@ import AuthorRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggre
 import ModeratorRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ModeratorRoleAssignedToUser";
 import AdminRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/AdminRoleAssignedToUser";
 import RootRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/RootRoleAssignedToUser";
-import UUID from "src/Modules/Common/Main/Ts/Domain/SeedWorks/UUID";
 import ResetPasswordTokenIssued from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ResetPasswordTokenIssued";
 import PasswordChanged from "src/Modules/Users/Main/Ts/Domain/UserAggregate/PasswordChanged";
 
@@ -214,7 +213,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     {
         this.role = Roles.ADMIN;
         this.concurrencyVersion = this.concurrencyVersion + 1;
-    
+
         this.addEvent
         (
             new AdminRoleAssignedToUser
