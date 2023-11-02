@@ -1,7 +1,10 @@
-import RegisterUseCase from "src/Modules/Users/Main/Ts/Application/UseCases/RegisterUseCase";
+import RegisterUseCase from "../../UseCases/RegisterUseCase";
+import { IEncryptionService } from "../Output/IEncryptionService";
 
 export default class RegisterInputPort extends RegisterUseCase
 {
-    constructor (private readonly _encryptionService: IEncryptionService)
-    { }
+    // constructor (private readonly _encryptionService: IEncryptionService)
+    // {
+    //     super();
+    // }
 }

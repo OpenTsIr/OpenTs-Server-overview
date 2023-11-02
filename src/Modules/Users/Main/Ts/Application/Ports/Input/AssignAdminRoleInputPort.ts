@@ -1,4 +1,4 @@
-import AssignAdminRoleUseCase from "src/Modules/Users/Main/Ts/Domain/UseCases/AssignAdminRoleUseCase";
+import AssignAdminRoleUseCase from "../../UseCases/AssignAdminRoleUseCase";
 
 export default class AssignAdminRoleInputPort extends AssignAdminRoleUseCase
 {
