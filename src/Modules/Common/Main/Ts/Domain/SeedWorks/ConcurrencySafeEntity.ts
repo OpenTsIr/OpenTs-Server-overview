@@ -1,7 +1,7 @@
 import Entity from "src/Modules/Common/Main/Ts/Domain/SeedWorks/Entity";
 import UUID from "src/Modules/Common/Main/Ts/Domain/SeedWorks/UUID";
 
-export default class ConcurrencySafeEntity<TId extends UUID> extends Entity<TId>
+export default abstract class ConcurrencySafeEntity<TId extends UUID> extends Entity<TId>
 {
     private _concurrencyVersion: number = 1;
 

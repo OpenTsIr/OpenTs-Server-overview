@@ -23,6 +23,8 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "argon2": "^0.31.2",
+    "bcrypt": "^5.1.1",
     "deep-equal": "^2.2.2",
     "express": "^4.18.2",
     "node-jose": "^2.2.0",

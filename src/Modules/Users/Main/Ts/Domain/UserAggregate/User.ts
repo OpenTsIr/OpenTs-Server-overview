@@ -17,6 +17,9 @@ import AdminRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggreg
 import RootRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/RootRoleAssignedToUser";
 import ResetPasswordTokenIssued from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ResetPasswordTokenIssued";
 import PasswordChanged from "src/Modules/Users/Main/Ts/Domain/UserAggregate/PasswordChanged";
+import UserStatus from "src/Modules/Users/Main/Ts/Domain/UserStatus";
+import { BadRequestException } from "@nestjs/common";
+import { VerifiedSpecification } from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/VerifiedSpecification";
 
 export default class User extends ConcurrencySafeEntity<UserId> implements IAggregateRoot
 {
@@ -27,8 +30,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     private _resetPasswordToken?: ResetPasswordToken;
     private _resetPasswordTokenIssuedAt?: Date;
     private _emailVerificationToken: EmailVerificationToken;
-    private _emailVerificationStatus: EmailVerificationStatus;
     private _emailVerificationTokenIssuedAt: Date;
+    private _status: UserStatus = UserStatus.PENDING_EMAIL_VERIFICATION;
     private _createdAt: Date;
     private _updatedAt: Date;
 
@@ -39,6 +42,14 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     public set email(value: Email)
     {
         this._email = value;
+    }
+    public get status(): UserStatus
+    {
+        return this._status;
+    }
+    public set status(status: UserStatus)
+    {
+        this._status = status;
     }
     public get password(): Password
     {
@@ -88,14 +99,6 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     {
         this._emailVerificationToken = value;
     }
-    public get emailVerificationStatus(): EmailVerificationStatus
-    {
-        return this._emailVerificationStatus;
-    }
-    public set emailVerificationStatus(value: EmailVerificationStatus)
-    {
-        this._emailVerificationStatus = value;
-    }
     public get emailVerificationTokenIssuedAt(): Date
     {
         return this._emailVerificationTokenIssuedAt;
@@ -128,56 +131,46 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.password = password;
         this.concurrencyVersion = concurrenyVersion;
         this.role = Roles.USER;
-        this.emailVerificationStatus = EmailVerificationStatus.PENDING_EMAIL_VERIFICATION;
+        this.status = UserStatus.PENDING_EMAIL_VERIFICATION;
         this.emailVerificationToken = emailVerificationToken;
         this.emailVerificationTokenIssuedAt = emailVerificationTokenIssuedAt;
 
         this.addEvent
-        (
-            new NewUserRegistered
             (
-                userId,
-                email,
-                nickname
-            )
-        );
+                new NewUserRegistered
+                    (
+                        userId,
+                        email,
+                        nickname
+                    )
+            );
+        // user ( button, checkbox, radio button - dropdown - cli ) - other services - external applications - time
+
+        // fake email address
+        // email service not working
+        // کاربر منصرف شده است -> UX
+        // verifyEmailAddress route corrupted
+        // server down
+
+        // new UserDidNotCompletedRegistrationAfterTwoDays
+        // (
+
+        // )
     }
     public verifyEmailAddress()
     {
-        this.emailVerificationStatus = EmailVerificationStatus.EMAIL_VERIFIED;
-        this.emailVerificationToken = null;
-        this.emailVerificationTokenIssuedAt = null;
+        this.status = UserStatus.EMAIL_VERIFIED;
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
         this.addEvent
-        (
-            new EmailVerified
             (
-                this.id,
-                this.email,
-                this.nickname
-            )
-        );
-    }
-    public login( userId: UserId,  nickname: Nickname,  email: Email,  password: Password,  role: Roles,  emailVerificationStatus: EmailVerificationStatus, concurrencyVersion: number)
-    {
-        this.id = userId;
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.concurrencyVersion = concurrencyVersion;
-        this.role = role;
-        this.emailVerificationStatus = emailVerificationStatus;
-
-        this.addEvent
-        (
-            new UserLoggedIn
-            (
-                userId,
-                email,
-                nickname
-            )
-        );
+                new EmailVerified
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname
+                    )
+            );
     }
     public makeAuthor()
     {
@@ -185,29 +178,29 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
         this.addEvent
-        (
-            new AuthorRoleAssignedToUser
             (
-                this.id,
-                this.email,
-                this.nickname
-            )
-        );
+                new AuthorRoleAssignedToUser
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname
+                    )
+            );
     }
     public makeModerator()
     {
         this.role = Roles.MODERATOR;
         this.concurrencyVersion = this.concurrencyVersion + 1;
-        
+
         this.addEvent
-        (
-            new ModeratorRoleAssignedToUser
             (
-                this.id,
-                this.email,
-                this.nickname
-            )
-        );
+                new ModeratorRoleAssignedToUser
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname
+                    )
+            );
     }
     public makeAdmin()
     {
@@ -215,14 +208,14 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
         this.addEvent
-        (
-            new AdminRoleAssignedToUser
             (
-                this.id,
-                this.email,
-                this.nickname
-            )
-        )
+                new AdminRoleAssignedToUser
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname
+                    )
+            );
     }
     public makeRoot()
     {
@@ -230,14 +223,14 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
         this.addEvent
-        (
-            new RootRoleAssignedToUser
             (
-                this.id,
-                this.email,
-                this.nickname
-            )
-        );
+                new RootRoleAssignedToUser
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname
+                    )
+            );
     }
     public requestResettingPassword()
     {
@@ -246,15 +239,15 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
         this.addEvent
-        (
-            new ResetPasswordTokenIssued
             (
-                this.id,
-                this.email,
-                this.nickname,
-                this.resetPasswordToken
-            )
-        );
+                new ResetPasswordTokenIssued
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname,
+                        this.resetPasswordToken
+                    )
+            );
     }
     public resetPassword(aNewPassword: Password)
     {
@@ -264,13 +257,33 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
         this.addEvent
-        (
-            new PasswordChanged
             (
-                this.id,
-                this.email,
-                this.nickname
-            )
-        );
+                new PasswordChanged
+                    (
+                        this.id,
+                        this.email,
+                        this.nickname
+                    )
+            );
+    }
+    private getSpecification()
+    {
+        switch (this.status)
+        {
+            case UserStatus.EMAIL_VERIFIED:
+                {
+                    return new VerifiedSpecification();
+                }
+            default:
+                {
+                    throw new BadRequestException("امکان انجام عملیات وجود ندارد");
+                }
+        }
+    }
+    public validateInvariant(): void
+    {
+        const specification = this.getSpecification();
+
+        specification.isSatisfiedBy(this);
     }
 }

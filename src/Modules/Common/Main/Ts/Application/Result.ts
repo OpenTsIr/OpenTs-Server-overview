@@ -36,7 +36,7 @@ export default class Result<T>
         }
         return this.notification;
     }
-    static combine<U>(results: Result<U>[]): Result<U>
+    static combine(results: Result<any>[]): Result<any>
     {
         const notifications: Notification[] = [];
 

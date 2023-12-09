@@ -8,7 +8,7 @@ export interface KeyPair
 {
     privateKey: Awaited<ReturnType<typeof JWK.asKey>>;
     publicKey: Awaited<ReturnType<typeof JWK.asKey>>;
-} 
+}
 
 @Injectable()
 export default class JWKeyStore implements IKeyStore
@@ -24,12 +24,12 @@ export default class JWKeyStore implements IKeyStore
     }
     public async getActiveKeyPair()
     {
-        const [ kid, stringifiedKeys ] = Array.from(this._keyStore.entries())[this.keysLength - 1];
-    
+        const [ kid, stringifiedKeys ] = Array.from(this._keyStore.entries())[ this.keysLength - 1 ];
+
         const { privateKey, publicKey } = JSON.parse(stringifiedKeys);
 
 
-        const JWKs: KeyPair = { privateKey: await JWK.asKey(privateKey, "pem"), publicKey: await JWK.asKey(publicKey, "pem") }
+        const JWKs: KeyPair = { privateKey: await JWK.asKey(privateKey, "pem"), publicKey: await JWK.asKey(publicKey, "pem") };
 
         return [ kid, JWKs ] as [ string, KeyPair ];
     }
@@ -39,7 +39,7 @@ export default class JWKeyStore implements IKeyStore
 
         const { privateKey, publicKey } = JSON.parse(stringifiedKeys);
 
-        return { privateKey: await JWK.asKey(privateKey, "pem"), publicKey: await JWK.asKey(publicKey, "pem") }
+        return { privateKey: await JWK.asKey(privateKey, "pem"), publicKey: await JWK.asKey(publicKey, "pem") };
     }
     private get redundantKeysCount(): number
     {
@@ -56,17 +56,17 @@ export default class JWKeyStore implements IKeyStore
         try
         {
             const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa",
-            {
-                modulusLength: 1024,
-                publicKeyEncoding: {
-                    type: 'spki',
-                    format: 'pem',
-                },
-                privateKeyEncoding: {
-                    type: 'pkcs1',
-                    format: 'pem'
-                }
-            });
+                {
+                    modulusLength: 1024,
+                    publicKeyEncoding: {
+                        type: 'spki',
+                        format: 'pem',
+                    },
+                    privateKeyEncoding: {
+                        type: 'pkcs1',
+                        format: 'pem'
+                    }
+                });
             this.writeKeys(keysId.toString(), JSON.stringify({ privateKey, publicKey }));
             this.loadKeys();
         }
@@ -75,21 +75,26 @@ export default class JWKeyStore implements IKeyStore
             throw new InternalServerErrorException(error.message);
         }
     }
-    private loadKeys(): void
+    private async loadKeys(): Promise<void>
     {
         try
         {
+            this.revokeRedundantKeys();
+
             const keyFilenames = fs.readdirSync(process.cwd() + "/keys", "utf8");
 
-            for (const filename of keyFilenames)
+            if (keyFilenames.length === 0)
+            {
+                await this.generate();
+            }
+            else for (const filename of keyFilenames)
             {
                 const keyPair = fs.readFileSync(process.cwd() + `/keys/${ filename }`, "utf-8");
 
-                const keyName = filename.split(".")[0];
+                const keyName = filename.split(".")[ 0 ];
 
                 this._keyStore.set(keyName, keyPair);
             }
-            this.revokeRedundantKeys();
         }
         catch (error)
         {
@@ -117,7 +122,7 @@ export default class JWKeyStore implements IKeyStore
     {
         for (let i = 0; i < this.redundantKeysCount; i++)
         {
-            const keyToBeDeleted = Array.from(this._keyStore.entries())[0][0];
+            const keyToBeDeleted = Array.from(this._keyStore.entries())[ 0 ][ 0 ];
 
             this.deleteKey(keyToBeDeleted);
         }

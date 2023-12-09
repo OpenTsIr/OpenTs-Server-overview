@@ -16,6 +16,7 @@ import RootRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggrega
 import ResetPasswordTokenIssued from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ResetPasswordTokenIssued";
 import PasswordChanged from "src/Modules/Users/Main/Ts/Domain/UserAggregate/PasswordChanged";
 import EmailVerificationToken from "src/Modules/Users/Main/Ts/Domain/UserAggregate/EmailVerificationToken";
+import UserStatus from "src/Modules/Users/Main/Ts/Domain/UserStatus";
 
 let nickname: Nickname = null;
 let email: Email = null;
@@ -53,7 +54,7 @@ describe("User AggregateRoot", () =>
 
         expect(user.emailVerificationToken).toBe(emailVerificationToken);
         expect(user.emailVerificationTokenIssuedAt).toBe(emailVerificationTokenIssuedAt);
-        expect(user.emailVerificationStatus).toEqual(EmailVerificationStatus.PENDING_EMAIL_VERIFICATION);
+        expect(user.status).toEqual(UserStatus.PENDING_EMAIL_VERIFICATION);
         expect(user.emailVerificationTokenIssuedAt).toEqual(emailVerificationTokenIssuedAt);
         expect(user.role).toEqual(Roles.USER);
 
@@ -63,29 +64,12 @@ describe("User AggregateRoot", () =>
     {
         user.verifyEmailAddress();
 
-        expect(user.emailVerificationStatus).toEqual(EmailVerificationStatus.EMAIL_VERIFIED);
+        expect(user.status).toEqual(UserStatus.EMAIL_VERIFIED);
         expect(user.emailVerificationToken).toEqual(null);
         expect(user.emailVerificationTokenIssuedAt).toEqual(null);
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), EmailVerified);
-    });
-    it("logs user in", async () =>
-    {
-        const role = Roles.USER;
-        const emailVerificationStatus = EmailVerificationStatus.EMAIL_VERIFIED;
-
-        user.login(userId, nickname, email, password, role, emailVerificationStatus, concurrencyVersion);
-
-        expect(user.id).toBeInstanceOf(UUID);
-        expect(user.email).toBeInstanceOf(Email);
-        expect(user.nickname).toBeInstanceOf(Nickname);
-        expect(user.password).toBeInstanceOf(Password);
-        expect(user.emailVerificationStatus).toBe(EmailVerificationStatus.EMAIL_VERIFIED);
-        expect(user.concurrencyVersion).toEqual(concurrencyVersion);
-        expect(user.role).toBe(Roles.USER);
-
-        checkForEventExistance(user.getEvents(), UserLoggedIn);
     });
     it("makes the user an Author", async () =>
     {
@@ -94,8 +78,8 @@ describe("User AggregateRoot", () =>
         user.makeAuthor();
 
         expect(user.role).toEqual(Roles.AUTHOR);
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), AuthorRoleAssignedToUser);
     });
     it("makes the user a Moderator", async () =>
@@ -105,8 +89,8 @@ describe("User AggregateRoot", () =>
         user.makeModerator();
 
         expect(user.role).toEqual(Roles.MODERATOR);
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), ModeratorRoleAssignedToUser);
     });
     it("makes the user an Admin", async () =>
@@ -115,8 +99,8 @@ describe("User AggregateRoot", () =>
         user.makeAdmin();
 
         expect(user.role).toEqual(Roles.ADMIN);
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), AdminRoleAssignedToUser);
     });
     it("makes the user a Root", async () =>
@@ -125,8 +109,8 @@ describe("User AggregateRoot", () =>
         user.makeRoot();
 
         expect(user.role).toEqual(Roles.ROOT);
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), RootRoleAssignedToUser);
     });
     it("requests for a resetting password", async () =>
@@ -136,8 +120,8 @@ describe("User AggregateRoot", () =>
 
         expect(user.resetPasswordToken).toBeDefined();
         expect(user.resetPasswordTokenIssuedAt).toBeDefined();
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), ResetPasswordTokenIssued);
     });
     it("resets password", async () =>
@@ -151,8 +135,8 @@ describe("User AggregateRoot", () =>
         expect(user.password.value).not.toEqual(password.value);
         expect(user.resetPasswordToken).toEqual(null);
         expect(user.resetPasswordTokenIssuedAt).toEqual(null);
-        
-        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1)
+
+        ensureConcurrencyVersionIncrementsByOne(user.concurrencyVersion, concurrencyVersion + 1);
         checkForEventExistance(user.getEvents(), PasswordChanged);
     });
 });

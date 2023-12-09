@@ -6,6 +6,7 @@ export default class Password extends ValueObject<string>
 {
     static PASSWORD_COULD_NOT_BE_AN_EMPTY_STRING = "نام نمایشی نمیتواند خالی باشد";
     static INVALID_LENGTH = "رمز عبور باید بین ۸ الی ۲۰ کاراکتر باشد";
+    static PASSWORD_NOT_MATCH = "گذرواژه‌های وارد شده همخوانی ندارند ";
 
     private static isValid(aPassword: string, aNotification: Notification)
     {
@@ -29,5 +30,20 @@ export default class Password extends ValueObject<string>
             return Result.fail(notification);
         }
         return Result.ok(new Password({ value: password }));
+    }
+    static createFromHashed(aHashedPassword: string)
+    {
+        return Result.ok(new Password({ value: aHashedPassword }));
+    }
+    compareWithConfirm(aPassword: Password): Result<Password>
+    {
+        const notification = new Notification();
+
+        if (!aPassword.equals(this))
+        {
+            notification.addError(Password.PASSWORD_NOT_MATCH);
+            return Result.fail(notification);
+        }
+        return Result.ok(aPassword);
     }
 }

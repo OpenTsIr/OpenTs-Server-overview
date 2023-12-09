@@ -2,7 +2,7 @@ import UUID from "src/Modules/Common/Main/Ts/Domain/SeedWorks/UUID";
 import IdentifiedDomainObject from "src/Modules/Common/Main/Ts/Domain/SeedWorks/IdentifiedDomainObject";
 import DomainEvent from "src/Modules/Common/Main/Ts/Domain/SeedWorks/DomainEvent";
 
-export default class Entity<TId extends UUID> extends IdentifiedDomainObject<TId>
+export default abstract class Entity<TId extends UUID> extends IdentifiedDomainObject<TId>
 {
     private _events: Set<DomainEvent> = new Set();
 
@@ -30,4 +30,5 @@ export default class Entity<TId extends UUID> extends IdentifiedDomainObject<TId
         }
         return false;
     }
+    public abstract validateInvariant(): void;
 }

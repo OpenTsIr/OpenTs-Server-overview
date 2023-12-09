@@ -35,8 +35,6 @@ describe('SigningService', () =>
         const signedData = await signingService.sign(data, privateKey);
         const verifiedData = await signingService.verify(signedData, publicKey);
 
-        console.log(signedData)
-
         // Check
         expect(verifiedData).toBe(data);
     });
