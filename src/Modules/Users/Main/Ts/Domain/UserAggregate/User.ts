@@ -18,7 +18,7 @@ import RootRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggrega
 import ResetPasswordTokenIssued from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ResetPasswordTokenIssued";
 import PasswordChanged from "src/Modules/Users/Main/Ts/Domain/UserAggregate/PasswordChanged";
 import UserStatus from "src/Modules/Users/Main/Ts/Domain/UserStatus";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, PreconditionFailedException } from "@nestjs/common";
 import { VerifiedSpecification } from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/VerifiedSpecification";
 
 export default class User extends ConcurrencySafeEntity<UserId> implements IAggregateRoot
@@ -135,6 +135,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.emailVerificationToken = emailVerificationToken;
         this.emailVerificationTokenIssuedAt = emailVerificationTokenIssuedAt;
 
+        this.validateInvariant();
+
         this.addEvent
             (
                 new NewUserRegistered
@@ -162,6 +164,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.status = UserStatus.EMAIL_VERIFIED;
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
+        this.validateInvariant();
+
         this.addEvent
             (
                 new EmailVerified
@@ -176,6 +180,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     {
         this.role = Roles.AUTHOR;
         this.concurrencyVersion = this.concurrencyVersion + 1;
+
+        this.validateInvariant();
 
         this.addEvent
             (
@@ -192,6 +198,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.role = Roles.MODERATOR;
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
+        this.validateInvariant();
+
         this.addEvent
             (
                 new ModeratorRoleAssignedToUser
@@ -206,6 +214,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     {
         this.role = Roles.ADMIN;
         this.concurrencyVersion = this.concurrencyVersion + 1;
+
+        this.validateInvariant();
 
         this.addEvent
             (
@@ -222,6 +232,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.role = Roles.ROOT;
         this.concurrencyVersion = this.concurrencyVersion + 1;
 
+        this.validateInvariant();
+
         this.addEvent
             (
                 new RootRoleAssignedToUser
@@ -237,6 +249,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.resetPasswordToken = ResetPasswordToken.create().value;
         this.resetPasswordTokenIssuedAt = new Date();
         this.concurrencyVersion = this.concurrencyVersion + 1;
+
+        this.validateInvariant();
 
         this.addEvent
             (
@@ -255,6 +269,8 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
         this.resetPasswordToken = null;
         this.resetPasswordTokenIssuedAt = null;
         this.concurrencyVersion = this.concurrencyVersion + 1;
+
+        this.validateInvariant();
 
         this.addEvent
             (
@@ -284,6 +300,9 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     {
         const specification = this.getSpecification();
 
-        specification.isSatisfiedBy(this);
+        if (!specification.isSatisfiedBy(this))
+        {
+            throw new PreconditionFailedException("امکان پردازش درخواست وجود ندارد");
+        }
     }
 }

@@ -39,32 +39,16 @@ export default class RegisterInputPort implements IRegisterUseCase
         {
             throw new UnprocessableEntityException(validationResult.getError().getMessages());
         }
-        let isAccountAvailable: boolean;
+        const isAccountAvailable = await this._userRepository.isAccountAvailable(emailResult.value);
 
-        try
-        {
-            isAccountAvailable = await this._userRepository.isAccountAvailable(emailResult.value);
-        }
-        catch (error)
-        {
-            console.log(error);
-            throw new ServiceUnavailableException("در حال حاظر سیستم با اشکال مواجه است");
-        }
         if (!isAccountAvailable)
         {
             throw new PreconditionFailedException("این آدرس ایمیل از قبل وجود دارد");
         }
         const hashedPassword = await this._hashService.createHash(passwordResult.value.value);
 
-        try
-        {
-            await this._userRepository.registerNewUser(emailResult.value, Password.createFromHashed(hashedPassword).value);
-        }
-        catch (error)
-        {
-            console.log(error);
-            throw new ServiceUnavailableException("در حال حاظر سیستم با اشکال مواجه است");
-        }
+        await this._userRepository.registerNewUser(emailResult.value, Password.createFromHashed(hashedPassword).value);
+
         return Result.ok();
     }
 }

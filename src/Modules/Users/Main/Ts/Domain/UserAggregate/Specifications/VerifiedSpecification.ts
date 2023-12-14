@@ -29,5 +29,4 @@ export class VerifiedSpecification extends Specification<User>
     {
         return this.isSatisfiedBy(entity);
     }
-
 }
