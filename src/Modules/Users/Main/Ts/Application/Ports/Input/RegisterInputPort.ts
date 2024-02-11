@@ -1,15 +1,15 @@
-import { Inject, PreconditionFailedException, ServiceUnavailableException, UnprocessableEntityException } from "@nestjs/common";
-import Password from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Password";
+import { Inject, PreconditionFailedException, UnprocessableEntityException } from "@nestjs/common";
 import { IHashService } from "src/Modules/Users/Main/Ts/Application/Ports/Output/IHashService";
 import { IUserRepository } from "src/Modules/Users/Main/Ts/Application/Ports/Output/IUserRepository";
 import { IRegisterUseCase } from "src/Modules/Users/Main/Ts/Application/UseCases/IRegisterUseCase";
+import Password from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Password";
 import Result from "src/Modules/Common/Main/Ts/Application/Result";
 import RegisterCommand from "src/Modules/Users/Main/Ts/Application/Commands/RegisterCommand";
 import Email from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Email";
 
 export default class RegisterInputPort implements IRegisterUseCase
 {
-    constructor
+    public constructor
         (
             @Inject(IUserRepository)
             private readonly _userRepository: IUserRepository,
@@ -17,12 +17,13 @@ export default class RegisterInputPort implements IRegisterUseCase
             private readonly _hashService: IHashService
         )
     { }
-    async handle(command: RegisterCommand): Promise<Result<void>>
+    public async handle(command: RegisterCommand): Promise<Result<void>>
     {
         const emailResult = Email.createFromInput(command.email);
         const passwordResult = Password.createFromInput(command.password);
         const confirmPasswordResult = Password.createFromInput(command.confirmPassword);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let validationResult: Result<any> = null;
 
         if (passwordResult.isSuccess() && confirmPasswordResult.isSuccess())

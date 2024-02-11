@@ -6,28 +6,28 @@ import { JWK } from "node-jose";
 @Injectable()
 export default class JWEncryptionService implements IEncryptionService
 {
-    async encrypt(data: string, publicJWK: Awaited<Promise<ReturnType<typeof JWK.asKey>>>, kid: string, expirationTimeInMilliseconds: number): Promise<string>
+    public async encrypt(data: string, publicJWK: Awaited<Promise<ReturnType<typeof JWK.asKey>>>, kid: string, expirationTimeInMilliseconds: number): Promise<string>
     {
         return await jose.JWE.createEncrypt
-        (
-            {
-                format: "compact",
-                contentAlg: "A256GCM",
-                fields:
+            (
                 {
-                    cty: "JWT",
-                    ckid: kid,
-                    expAt: (Date.now() * expirationTimeInMilliseconds)
+                    format: "compact",
+                    contentAlg: "A256GCM",
+                    fields:
+                    {
+                        cty: "JWT",
+                        ckid: kid,
+                        expAt: (Date.now() * expirationTimeInMilliseconds)
+                    },
                 },
-            },
-            publicJWK
-        )
-        .update(data)
-        .final();
+                publicJWK
+            )
+            .update(data)
+            .final();
     }
-    async decrypt(encryptedData: string, privateJWK: Awaited<Promise<ReturnType<typeof JWK.asKey>>>): Promise<string>
+    public async decrypt(encryptedData: string, privateJWK: Awaited<Promise<ReturnType<typeof JWK.asKey>>>): Promise<string>
     {
-        const decryptionResult = await jose.JWE.createDecrypt(privateJWK as any).decrypt(encryptedData);
+        const decryptionResult = await jose.JWE.createDecrypt(privateJWK as never).decrypt(encryptedData);
 
         return decryptionResult.payload.toString();
     }

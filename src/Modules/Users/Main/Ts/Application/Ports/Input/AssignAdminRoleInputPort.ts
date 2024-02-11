@@ -1,16 +1,19 @@
 import { Inject, BadRequestException, NotFoundException } from "@nestjs/common";
-import Result from "src/Modules/Common/Main/Ts/Application/Result";
-import AssignAdminRoleCommand from "src/Modules/Users/Main/Ts/Application/Commands/AssignAdminRoleCommand";
 import { IUserRepository } from "src/Modules/Users/Main/Ts/Application/Ports/Output/IUserRepository";
 import { IAssignAdminRoleUseCase } from "src/Modules/Users/Main/Ts/Application/UseCases/IAssignAdminRoleUseCase";
+import Result from "src/Modules/Common/Main/Ts/Application/Result";
+import AssignAdminRoleCommand from "src/Modules/Users/Main/Ts/Application/Commands/AssignAdminRoleCommand";
 import NullUserSpecification from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/NullUserSpecification";
 import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 
 export default class AssignAdminRoleInputPort implements IAssignAdminRoleUseCase
 {
-    constructor (@Inject(IUserRepository) private readonly _userRepository: IUserRepository)
+    public constructor
+        (
+            @Inject(IUserRepository) private readonly _userRepository: IUserRepository
+        )
     { }
-    async handle(command: AssignAdminRoleCommand): Promise<Result<void>>
+    public async handle(command: AssignAdminRoleCommand): Promise<Result<void>>
     {
         const userIdCreationResult = UserId.createFromInput(command.userId);
 

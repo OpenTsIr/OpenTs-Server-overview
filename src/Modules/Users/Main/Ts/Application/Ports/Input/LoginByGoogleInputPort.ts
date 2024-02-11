@@ -1,5 +1,5 @@
-export default class LoginByGoogle
+export default class LoginByGoogleInputPort
 {
-    constructor ()
+    public constructor ()
     { }
 }

@@ -15,38 +15,26 @@ describe("JWKeyStore", () =>
     it("generates and adds new keys to JWK store", async () =>
     {
         // Build
-        // const jwkStore = new JWKeyStore(7);
-
+        const jwkStore = new JWKeyStore();
         // Operate
-        // await jwkStore.generate();
+        await jwkStore.generate();
 
+        await jwkStore.loadKeys();
         // Check
-        // expect(jwkStore.keysLength).toBe(1);
-        expect(1).toBe(1);
+        expect(jwkStore.keysLength).toBe(1);
     });
     it("revokes all redundant keys with a lifetime of two days more than refresh token lifetime.", async () =>
     {
         // Build
-        // const jwkStore = new JWKeyStore(7);
+        const jwkStore = new JWKeyStore();
 
         // Operate
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-        // await jwkStore.generate();
-
+        for (const _ of new Array(14))
+        {
+            await jwkStore.generate();
+            await jwkStore.loadKeys();
+        }
         // Check
-        // expect(jwkStore.keysLength).toBe(8);
-        expect(8).toBe(8);
+        expect(jwkStore.keysLength).toBe(8);
     });
 });

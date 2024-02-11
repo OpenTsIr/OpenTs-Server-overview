@@ -2,3 +2,4 @@ node_modules
 keys
 test.ts
 dist
+.env.development.local

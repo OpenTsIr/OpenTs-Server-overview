@@ -1,5 +1,5 @@
-export default class RequestForResetPassword
+export default class RequestForResetPasswordInputPort
 {
-    constructor (public email: string)
+    public constructor (public email: string)
     { }
 }

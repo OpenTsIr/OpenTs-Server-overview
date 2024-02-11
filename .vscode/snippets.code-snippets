@@ -1,0 +1,287 @@
+{
+	// Place your SaminStarterKit workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"class":
+	{
+		"scope": "javascript,typescript",
+		"prefix": "cls",
+		"body": [
+			"export default class $TM_FILENAME_BASE",
+			"{",
+			"\t$1",
+			"}",
+			"$2"
+		],
+		"description": "Creates and exports a class with name of the file"
+	},
+	"interface":
+	{
+		"scope": "javascript,typescript",
+		"prefix": "inter",
+		"body": [
+			"export const $TM_FILENAME_BASE = Symbol(\"$TM_FILENAME_BASE\").valueOf()",
+			"export interface $TM_FILENAME_BASE",
+			"{ }",
+			""
+		],
+		"description": "Creates and exports a class with name of the file"
+	},
+	"accessors":
+	{
+		"scope": "javascript,typescript",
+		"prefix": "prop",
+		"body": [
+			"\tprivate _$1: $2;",
+			"\tpublic get $1(): $2",
+			"\t{",
+			"\t\treturn this._$1;",
+			"\t}",
+			"\tpublic set $1($1: $2)",
+			"\t{",
+			"\t\tthis._$1 = $1;",
+			"\t}"
+		],
+		"description": "Creates and exports a class with name of the file"
+	},
+	"PrivateField":
+	{
+		"scope": "javascript,typescript",
+		"prefix": "pri",
+		"body": [
+			"\tprivate _$1: $2;",
+			"\tpublic get $1(): $2",
+			"\t{",
+			"\t\treturn this._$1;",
+			"\t}",
+			"\tpublic set $1($1: $2)",
+			"\t{",
+			"\t\tthis._$1 = $1;",
+			"\t}"
+		]
+	},
+	"ProtectedField":
+	{
+		"scope": "javascript,typescript",
+		"prefix": "pro",
+		"body": [
+			"\tprotected _$1: $2;",
+			"\tpublic get $1(): $2",
+			"\t{",
+			"\t\treturn this._$1;",
+			"\t}",
+			"\tpublic set $1($1: $2)",
+			"\t{",
+			"\t\tthis._$1 = $1;",
+			"\t}"
+		]
+	},
+	"PublicField":
+	{
+		"scope": "javascript,typescript",
+		"prefix": "p",
+		"body": [
+			"public $1: $2;"
+		],
+		"description": "Creates and exports a class with name of the file"
+	},
+	"events":
+	{
+		"scope": "typescript",
+		"prefix": "de",
+		"body":[
+			"import DomainEvent from \"Src/Common/Main/Ts/Domain/SeedWorks/DomainEvent\";",
+			"",
+			"interface IEvent"
+			"{",
+			"\t$1: $2",
+			"}",
+			"export default class $TM_FILENAME_BASE extends DomainEvent<IEvent>",
+			"{",
+			"\tpublic constructor ($1: $2)",
+			"\t{",
+			"\t\tsuper({ $1 });",
+			"\t}",
+			"}",
+			""
+		]
+	},
+	"describe":
+	{
+		"scope": "typescript",
+		"prefix": "desc",
+		"body":[
+			"describe(\"$TM_FILENAME_BASE$1\", () =>",
+			"{",
+			"\tit(\"$2\", () =>",
+			"\t{",
+			"\t\t$3",
+			"\t})",
+			"})",
+			""
+		]
+	},
+	"it":
+	{
+		"scope": "typescript",
+		"prefix": "jit",
+		"body":[
+			"it(\"$1\", () =>",
+			"{",
+			"\t$2",
+			"})"
+		]
+	},
+	"ValueObject":
+	{
+		"scope": "typescript",
+		"prefix": "vo",
+		"body": [
+			"import Result from \"Src/Common/Main/Ts/Application/Result\";",
+			"import ValueObject from \"Src/Common/Main/Ts/Domain/SeedWorks/ValueObject\";",
+			"",
+			"export default class $TM_FILENAME_BASE extends ValueObject<$1>",
+			"{",
+			"\tpublic static createFromInput(a$TM_FILENAME_BASE: $1): Result<$TM_FILENAME_BASE>",
+			"\t{",
+			"\t\treturn Result.ok(new $TM_FILENAME_BASE({ value: a$TM_FILENAME_BASE }))",
+			"\t}",
+			"\tpublic static createFromValid(a$TM_FILENAME_BASE: $1): Result<$TM_FILENAME_BASE>",
+			"\t{",
+			"\t\treturn Result.ok(new $TM_FILENAME_BASE({ value: a$TM_FILENAME_BASE }))",
+			"\t}",
+			"}",
+			""
+		]
+	},
+	"Entity":
+	{
+		"scope": "typescript",
+		"prefix": "ent",
+		"body": [
+			"import Entity from \"Src/Common/Main/Ts/Domain/SeedWorks/Entity\";",
+			"",
+			"export default class $TM_FILENAME_BASE extends Entity<${TM_FILENAME_BASE}Id>",
+			"{",
+			"\t$2",
+			"}",
+			""
+		]
+	},
+	"AggregateRoot":
+	{
+		"scope": "typescript",
+		"prefix": "agg",
+		"body": [
+			"import AggregateRoot from \"Src/Common/Main/Ts/Domain/SeedWorks/AggregateRoot\";",
+			"",
+			"export default class $TM_FILENAME_BASE extends AggregateRoot<${TM_FILENAME_BASE}Id>",
+			"{",
+			"\t$2",
+			"\tpublic validateInvariant(): void",
+			"\t{",
+			"\t\tthrow new Error(\"Method not implemented.\");",
+			"\t}",
+			"}",
+			""
+		]
+	},
+	"Command":
+	{
+		"scope": "typescript",
+		"prefix": "com",
+		"body":[
+			"export default class ${TM_FILENAME_BASE}",
+			"{",
+			"\tpublic $1",
+			"}",
+			""
+		]
+	},
+	"Specification":
+	{
+		"scope": "typescript",
+		"prefix": "spec",
+		"body": [
+			"import Specification from \"Src/Common/Main/Ts/Domain/SeedWorks/Specifications/Specification\";",
+			"",
+			"export default class ${TM_FILENAME_BASE} extends Specification<$1>",
+			"{",
+				"\tpublic isSatisfiedBy(entity: $1): boolean",
+				"\t{",
+				"\t\tthrow new Error(\"Method not implemented.\");",
+				"\t}",
+				"\tpublic check(entity: $1): boolean"
+				"\t{"
+				"\t\treturn this.isSatisfiedBy(entity);"
+				"\t}"
+    		"}",
+			""
+		]
+	},
+	"Identity ValueObject":
+	{
+		"scope": "typescript",
+		"prefix": "id",
+		"body": [
+			"import UUIDV4 from \"Src/Common/Main/Ts/Domain/SeedWorks/UUIDV4\";",
+			"",
+			"export default class ${TM_FILENAME_BASE} extends UUIDV4",
+			"{ }",
+			""
+		]
+	},
+	"Mapper": {
+		"scope": "typescript",
+		"prefix": "mapper",
+		"body": [
+			"import { Mapper, MappingProfile, createMap, forMember, mapFrom } from \"@automapper/core\";",
+			"import { AutomapperProfile, InjectMapper } from \"@automapper/nestjs\";",
+			"import { Injectable } from \"@nestjs/common\";",
+			"",
+			"@Injectable()",
+			"export default class ${TM_FILENAME_BASE} extends AutomapperProfile",
+			"{",
+				"\tpublic constructor (@InjectMapper() mapper: Mapper)",
+				"\t{",
+					"\t\tsuper(mapper);",
+				"\t}",
+				"\t// eslint-disable-next-line accessor-pairs",
+				"\tpublic get profile(): MappingProfile",
+				"\t{",
+					"\t\treturn function (mapper)",
+					"\t\t{",
+						"\t\t\tcreateMap(mapper, $1, $2,",
+							"\t\t\t\tforMember((destination) => destination.$3, mapFrom((source) => source.$4)),",
+						"\t\t\t);",
+					"\t\t};",
+				"\t}",
+			"}"
+		]
+	},
+	"UseCase": {
+		"scope": "typescript",
+		"prefix": "uc",
+		"body": [
+			"import { ICommandHandler } from \"Src/Common/Main/Ts/Application/ICommandHandler\";",
+			"",
+			"export const ${TM_FILENAME_BASE} = Symbol(\"${TM_FILENAME_BASE}\").valueOf();",
+			"export interface ${TM_FILENAME_BASE} extends ICommandHandler<$1, Promise<$2>>",
+			"{ }",
+			""
+		]
+	}
+}

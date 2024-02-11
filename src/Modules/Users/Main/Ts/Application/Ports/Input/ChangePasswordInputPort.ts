@@ -1,5 +1,5 @@
-export default class ChangePassword
+export default class ChangePasswordInputPort
 {
-    constructor (public changePasswordToken: string,public newPassword: string)
+    public constructor (public changePasswordToken: string, public newPassword: string)
     { }
 }

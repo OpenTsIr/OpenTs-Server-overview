@@ -26,5 +26,6 @@
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "editor.formatOnSaveMode": "file",
     "typescript.preferences.importModuleSpecifier": "non-relative",
-    "javascript.preferences.importModuleSpecifier": "non-relative"
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+    "jest.autoRun": "off",
 }

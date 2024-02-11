@@ -1,24 +1,22 @@
-import { IUserRepository } from 'src/Modules/Users/Main/Ts/Application/Ports/Output/IUserRepository';
 import { InternalServerErrorException, Logger } from "@nestjs/common";
-import { Pool, PoolClient } from "pg";
+import { randomUUID } from 'crypto';
+import { PoolClient } from "pg";
+import { IUserRepository } from 'src/Modules/Users/Main/Ts/Application/Ports/Output/IUserRepository';
 import { IUnitOfWork } from "src/Modules/Common/Main/Ts/Infrastructure/Adapters/Persistence/IUnitOfWork";
 import { IConnection } from 'src/Modules/Common/Main/Ts/Infrastructure/Adapters/Persistence/IConnection';
-import { randomUUID } from 'crypto';
 import PostgresqlUserRepository from 'src/Modules/Users/Main/Ts/Infrastructure/Adapters/Output/Persistence/Postgresql/PostgresqlUserRepository';
 
-export default class PostgresqlUnitOfWork implements IUnitOfWork
+export default class PostgresqlUnitOfWork implements IUnitOfWork, Disposable
 {
-    private readonly _logger = new Logger(this.constructor.name);
+    private readonly _logger = new Logger(PostgresqlUnitOfWork.name);
     private _connection: PoolClient;
     private _transactionId: string = null;
-
     private _userRepository: IUserRepository;
-    // private _eventRepository: IEventRepository;
 
     public constructor
         (
             // private readonly _mapper: Mapper,
-            private readonly _databaseConnection: IConnection<Pool>
+            private readonly _databaseConnection: IConnection
         )
     { }
     // eslint-disable-next-line accessor-pairs
@@ -30,21 +28,8 @@ export default class PostgresqlUnitOfWork implements IUnitOfWork
         }
         return this._userRepository;
     }
-    // eslint-disable-next-line accessor-pairs
-    // public get eventRepository(): IEventRepository
-    // {
-    //     if (!this._eventRepository)
-    //     {
-    //         this._eventRepository = new OracledbEventRepository(this.mapper, this.connection);
-    //     }
-    //     return this._eventRepository;
-    // }
-    // eslint-disable-next-line accessor-pairs
-    // public get mapper(): Mapper
-    // {
-    //     return this._mapper;
-    // }
-    public get connection(): PoolClient
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    private get connection(): PoolClient
     {
         return this._connection;
     }
@@ -55,9 +40,7 @@ export default class PostgresqlUnitOfWork implements IUnitOfWork
     }
     private async _setupConnection(): Promise<void>
     {
-        await this._databaseConnection.setupConnectionPool();
-
-        this.connection = await this._databaseConnection.pool.connect();
+        this.connection = await this._databaseConnection.getConnection();
     }
     public async startTransaction(): Promise<void>
     {
@@ -85,9 +68,9 @@ export default class PostgresqlUnitOfWork implements IUnitOfWork
         await this.connection.query('COMMIT');
         this._logger.log("Transaction Commited: " + this._transactionId);
     }
-    public async [ Symbol.asyncDispose ](): Promise<void>
+    public [ Symbol.dispose ](): void
     {
-        this._connection.release();
+        this._databaseConnection.releaseConnection();
         console.timeEnd(this._transactionId);
     }
 }

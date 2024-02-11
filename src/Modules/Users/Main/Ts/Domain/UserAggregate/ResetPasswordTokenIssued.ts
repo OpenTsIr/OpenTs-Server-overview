@@ -6,7 +6,7 @@ import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 
 export default class ResetPasswordTokenIssued extends DomainEvent
 {
-    constructor (private _userId: UserId, private _email: Email, private _nickname: Nickname, private _resetPasswordToken: ResetPasswordToken)
+    public constructor (private _userId: UserId, private _email: Email, private _nickname: Nickname, private _resetPasswordToken: ResetPasswordToken)
     {
         super();
     }

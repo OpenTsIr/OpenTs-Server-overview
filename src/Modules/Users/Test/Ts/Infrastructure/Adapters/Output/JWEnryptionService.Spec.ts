@@ -1,43 +1,35 @@
 import JWEncryptionService from "src/Modules/Users/Main/Ts/Infrastructure/Adapters/Output/JWEncryptionService";
-import * as crypto from "crypto";
-import * as jose from "node-jose";
+import JWKeyStore from "src/Modules/Users/Main/Ts/Infrastructure/Adapters/Output/JWKeyStore";
+import JWSigningService from "src/Modules/Users/Main/Ts/Infrastructure/Adapters/Output/JWSigningService";
 
-describe('EncryptionService', () =>
+describe('SigningService', () =>
 {
-    let privateKey = null;
-    let publicKey = null;
+    let keyStore: JWKeyStore = null;
 
     beforeAll(async () =>
     {
-        const { privateKey: prkey, publicKey: pubkey } = crypto.generateKeyPairSync("rsa",
-        {
-            modulusLength: 1024,
-            publicKeyEncoding: {
-                type: 'spki',
-                format: 'pem',
-            },
-            privateKeyEncoding: {
-                type: 'pkcs1',
-                format: 'pem'
-            }
-        });
-
-        privateKey = await jose.JWK.asKey(prkey, "pem");
-        publicKey = await jose.JWK.asKey(pubkey, "pem");
+        keyStore = new JWKeyStore();
     });
-    it('should encrypt and decrypt a simple string', async () =>
+    it('should encrypt and decrypt a signed message', async () =>
     {
         // Build
+        const signingService = new JWSigningService();
         const encryptionService = new JWEncryptionService();
+
+        const [ keyId, { privateKey, publicKey } ] = await keyStore.getActiveKeyPair();
+
         const data = 'Hello, World!';
 
         // Operate
-        const encryptedData = await encryptionService.encrypt(data, publicKey, "3", 604800000);
-        const decryptedData = await encryptionService.decrypt(encryptedData, privateKey);
+        const signedData = await signingService.sign(data, privateKey);
+        const encryptSignedData = await encryptionService.encrypt(signedData, publicKey, keyId, 36000);
+
+        const key = await keyStore.getKeyPair(keyId);
+
+        const decryptedToken = await encryptionService.decrypt(encryptSignedData, key.privateKey);
+        const verifiedData = await signingService.verify(decryptedToken, key.publicKey);
 
         // Check
-        expect(decryptedData).toBe(data);
+        expect(verifiedData).toBe(data);
     });
-
-    // Add more test cases based on your specific scenarios
 });

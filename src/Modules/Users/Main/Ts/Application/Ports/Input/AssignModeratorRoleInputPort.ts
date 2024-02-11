@@ -6,11 +6,11 @@ import { IAssignModeratorRoleUseCase } from "src/Modules/Users/Main/Ts/Applicati
 import NullUserSpecification from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/NullUserSpecification";
 import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 
-export default class AssignModeratorRole implements IAssignModeratorRoleUseCase
+export default class AssignModeratorRoleInputPort implements IAssignModeratorRoleUseCase
 {
-    constructor (@Inject(IUserRepository) private readonly _userRepository: IUserRepository)
+    public constructor (@Inject(IUserRepository) private readonly _userRepository: IUserRepository)
     { }
-    async handle(command: AssignModeratorRoleCommand): Promise<Result<void>>
+    public async handle(command: AssignModeratorRoleCommand): Promise<Result<void>>
     {
         const userIdCreationResult = UserId.createFromInput(command.userId);
 

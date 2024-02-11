@@ -7,10 +7,10 @@ import { ITokenService } from "src/Modules/Users/Main/Ts/Application/Ports/Outpu
 @Injectable()
 export default class JWTokenService implements ITokenService
 {
-    private static SEVEN_DAYS_IN_MILLISECONDS = 604800000;
-    private static ONE_DAY_IN_MILLISECONDS = 86400000;
+    private static _SEVEN_DAYS_IN_MILLISECONDS = 604800000;
+    private static _ONE_DAY_IN_MILLISECONDS = 86400000;
 
-    constructor
+    public constructor
         (
             @Inject(ISigningService)
             private readonly _signingService: ISigningService,
@@ -20,21 +20,21 @@ export default class JWTokenService implements ITokenService
             private readonly _keyStore: IKeyStore
         )
     { }
-    async create(data: string): Promise<{ accessToken: string, refreshToken: string; }>
+    public async create(data: string): Promise<{ accessToken: string, refreshToken: string; }>
     {
         const [ keyId, { privateKey, publicKey } ] = await this._keyStore.getActiveKeyPair();
 
         const signedAccessToken = await this._signingService.sign(data, privateKey);
-        const encrypteAccessToken = await this._encryptionService.encrypt(signedAccessToken, publicKey, keyId, JWTokenService.ONE_DAY_IN_MILLISECONDS);
+        const encrypteAccessToken = await this._encryptionService.encrypt(signedAccessToken, publicKey, keyId, JWTokenService._ONE_DAY_IN_MILLISECONDS);
 
         const signedRefreshToken = await this._signingService.sign(data, privateKey);
-        const encrypteRefreshToken = await this._encryptionService.encrypt(signedRefreshToken, publicKey, keyId, JWTokenService.SEVEN_DAYS_IN_MILLISECONDS);
+        const encrypteRefreshToken = await this._encryptionService.encrypt(signedRefreshToken, publicKey, keyId, JWTokenService._SEVEN_DAYS_IN_MILLISECONDS);
 
         return { accessToken: encrypteAccessToken, refreshToken: encrypteRefreshToken };
     }
-    async validate(token: string): Promise<string>
+    public async validate(token: string): Promise<string>
     {
-        const { ckid, expAt } = this.getMetadata(token);
+        const { ckid, expAt } = this._getMetadata(token);
 
         if (Date.now() > expAt)
         {
@@ -46,13 +46,19 @@ export default class JWTokenService implements ITokenService
         {
             throw new UnauthorizedException();
         }
+        console.log("\n\nencryptedUserData", token, "\n\n");
+
         const sinedUserData = await this._encryptionService.decrypt(token, keyPair.privateKey);
+
+        console.log("\n\nsinedUserData => ", sinedUserData, "\n\n");
 
         const userData = await this._signingService.verify(sinedUserData, keyPair.publicKey);
 
+        console.log("\n\nuserData => ", userData, "\n\n");
+
         return userData;
     }
-    private getMetadata(token: string)
+    private _getMetadata(token: string): { ckid: string, expAt: number; }
     {
         const encodedHeader = token.split(".")[ 0 ];
 

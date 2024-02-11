@@ -1,60 +1,51 @@
 import { IConnection } from "src/Modules/Common/Main/Ts/Infrastructure/Adapters/Persistence/IConnection";
-import { InternalServerErrorException, NotImplementedException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotImplementedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Pool, PoolClient } from "pg";
 
-export default class PostgresqlConnection implements IConnection<Pool>
+@Injectable()
+export default class PostgresqlConnection implements IConnection
 {
     private static _pool: Pool = null;
+    private static _connection: PoolClient = null;
 
     public constructor (private readonly _configService: ConfigService)
     {
-        if (!!this.pool)
+        if (!!PostgresqlConnection._pool)
         {
-            throw new InternalServerErrorException("امکان اجرای درخواست وجود ندارد");
+            throw new InternalServerErrorException("Connection already exists");
         }
-        this.pool = new Pool({
+        PostgresqlConnection._pool = new Pool({
             user: this._configService.getOrThrow("DATABASE_USER"),
-            password: this._configService.getOrThrow("DATABASE_PASSWORD")
+            password: this._configService.getOrThrow("DATABASE_PASSWORD"),
+            database: this._configService.getOrThrow("DATABASE_NAME")
         });
     }
-    get connection(): Promise<Pool>
+    public async getConnection(): Promise<PoolClient>
     {
-        throw new NotImplementedException();
+        PostgresqlConnection._connection = await PostgresqlConnection._pool.connect();
+
+        return PostgresqlConnection._connection;
     }
-    public get pool(): Pool
+    public releaseConnection(): void
     {
-        return PostgresqlConnection._pool;
-    }
-    private set pool(pool: Pool)
-    {
-        PostgresqlConnection._pool = pool;
-    }
-    async setupConnectionPool(): Promise<void>
-    {
-        if (this.pool === null)
-        {
-            this.pool = PostgresqlConnection._pool;
-        }
-        return Promise.resolve();
+        PostgresqlConnection._connection.release();
     }
     public async isConnectionHealthy(): Promise<boolean>
     {
-        let currentClient: PoolClient;
-
         try
         {
-            currentClient = await this.pool.connect();
+            await this.getConnection();
 
             return true;
         }
         catch
         {
-            throw new InternalServerErrorException("خطای داخلی");
+            return false;
         }
         finally
         {
-            currentClient.release();
+            this.releaseConnection();
         }
     }
 }

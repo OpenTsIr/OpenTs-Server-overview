@@ -3,11 +3,11 @@ import { IHashService } from "src/Modules/Users/Main/Ts/Application/Ports/Output
 
 export class Argon2HashService implements IHashService
 {
-    async createHash(data: string): Promise<string>
+    public async createHash(data: string): Promise<string>
     {
         return await argon2.hash(data);
     }
-    async compare(hash: string, data: string): Promise<boolean>
+    public async compare(hash: string, data: string): Promise<boolean>
     {
         return await argon2.verify(hash, data);
     }

@@ -6,10 +6,11 @@ import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 
 export default class ModeratorRoleAssignedToUser extends DomainEvent
 {
-    constructor (private _userId: UserId, private _email: Email, private _nickname: Nickname)
+    public constructor (private _userId: UserId, private _email: Email, private _nickname: Nickname)
     {
         super();
     }
+    // eslint-disable-next-line accessor-pairs
     public get role(): Roles
     {
         return Roles.MODERATOR;

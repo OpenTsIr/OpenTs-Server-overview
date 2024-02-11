@@ -1,15 +1,15 @@
 import { Inject, PreconditionFailedException } from "@nestjs/common";
-import Result from "src/Modules/Common/Main/Ts/Application/Result";
-import VerifyEmailAddressCommand from "src/Modules/Users/Main/Ts/Application/Commands/VerifyEmailAddressCommand";
 import { ITokenService } from "src/Modules/Users/Main/Ts/Application/Ports/Output/ITokenService";
 import { IUserRepository } from "src/Modules/Users/Main/Ts/Application/Ports/Output/IUserRepository";
 import { IVerifyEmailAddressUseCase } from "src/Modules/Users/Main/Ts/Application/UseCases/IVerifyEmailAddressUseCase";
+import Result from "src/Modules/Common/Main/Ts/Application/Result";
+import VerifyEmailAddressCommand from "src/Modules/Users/Main/Ts/Application/Commands/VerifyEmailAddressCommand";
 import Email from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Email";
 import User from "src/Modules/Users/Main/Ts/Domain/UserAggregate/User";
 
-export default class VerifyEmailAddress implements IVerifyEmailAddressUseCase
+export default class VerifyEmailAddressInputPort implements IVerifyEmailAddressUseCase
 {
-    constructor
+    public constructor
         (
             @Inject(IUserRepository)
             private readonly _userRepository: IUserRepository,
@@ -17,7 +17,7 @@ export default class VerifyEmailAddress implements IVerifyEmailAddressUseCase
             private readonly _tokenService: ITokenService
         )
     { }
-    async handle(command: VerifyEmailAddressCommand): Promise<Result<void>>
+    public async handle(command: VerifyEmailAddressCommand): Promise<Result<void>>
     {
         const { email } = JSON.parse(await this._tokenService.validate(command.emailVerificationToken));
 

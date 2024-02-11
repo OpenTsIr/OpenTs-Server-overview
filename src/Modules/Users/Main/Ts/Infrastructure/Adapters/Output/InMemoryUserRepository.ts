@@ -3,14 +3,35 @@ import { IUserRepository } from "src/Modules/Users/Main/Ts/Application/Ports/Out
 import Email from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Email";
 import Password from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Password";
 import User from "src/Modules/Users/Main/Ts/Domain/UserAggregate/User";
+import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 
 export class InMemoryUserRepository implements IUserRepository
 {
-    private users: { email: string, password: string; isConfirmed: boolean; }[] = [];
+    private _users: { email: string, password: string; isConfirmed: boolean; }[] = [];
 
-    isAccountAvailable(email: Email): Promise<boolean>
+    public getUserById(userId: UserId): Promise<User>
     {
-        const user = this.users.find((u) => (u.email === email.value && u.isConfirmed === true));
+        throw new Error("Method not implemented.");
+    }
+    public verifyUser(email: Email): Promise<void>
+    {
+        throw new Error("Method not implemented.");
+    }
+    public promoteUserToAuthor(user: User): Promise<void>
+    {
+        throw new Error("Method not implemented.");
+    }
+    public promoteUserToAdmin(user: User): Promise<void>
+    {
+        throw new Error("Method not implemented.");
+    }
+    public promoteUserToModerator(user: User): Promise<void>
+    {
+        throw new Error("Method not implemented.");
+    }
+    public isAccountAvailable(email: Email): Promise<boolean>
+    {
+        const user = this._users.find((u) => (u.email === email.value && u.isConfirmed === true));
 
         if (!user)
         {
@@ -18,22 +39,22 @@ export class InMemoryUserRepository implements IUserRepository
         }
         return Promise.resolve(false);
     }
-    registerNewUser(email: Email, hashedPassword: Password): Promise<void>
+    public registerNewUser(email: Email, hashedPassword: Password): Promise<void>
     {
-        this.users.push({ email: email.value, password: hashedPassword.value, isConfirmed: true });
+        this._users.push({ email: email.value, password: hashedPassword.value, isConfirmed: true });
 
-        console.log(this.users);
+        console.log(this._users);
 
         return Promise.resolve();
     }
-    getUserByEmailAddress(email: Email): Promise<User>
+    public getUserByEmailAddress(email: Email): Promise<User>
     {
-        const user = this.users.find((u) => u.email === email.value);
+        const user = this._users.find((u) => u.email === email.value);
 
         if (!user)
         {
             throw new NotFoundException("چنین کاربری وجود ندارد");
         }
-        return Promise.resolve(user) as unknown as any;
+        return Promise.resolve(user) as unknown as never;
     }
 }

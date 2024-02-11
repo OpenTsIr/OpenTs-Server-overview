@@ -4,11 +4,11 @@ import ValueObject from "src/Modules/Common/Main/Ts/Domain/SeedWorks/ValueObject
 
 export default class Password extends ValueObject<string>
 {
-    static PASSWORD_COULD_NOT_BE_AN_EMPTY_STRING = "نام نمایشی نمیتواند خالی باشد";
-    static INVALID_LENGTH = "رمز عبور باید بین ۸ الی ۲۰ کاراکتر باشد";
-    static PASSWORD_NOT_MATCH = "گذرواژه‌های وارد شده همخوانی ندارند ";
+    public static PASSWORD_COULD_NOT_BE_AN_EMPTY_STRING = "نام نمایشی نمیتواند خالی باشد";
+    public static INVALID_LENGTH = "رمز عبور باید بین ۸ الی ۲۰ کاراکتر باشد";
+    public static PASSWORD_NOT_MATCH = "گذرواژه‌های وارد شده همخوانی ندارند ";
 
-    private static isValid(aPassword: string, aNotification: Notification)
+    private static _isValid(aPassword: string, aNotification: Notification): Notification
     {
         if (aPassword.length === 0)
         {
@@ -20,22 +20,26 @@ export default class Password extends ValueObject<string>
         }
         return aNotification;
     }
-    static createFromInput(aPassword: string): Result<Password>
+    public static createFromInput(aPassword: string): Result<Password>
     {
         const notification = new Notification();
         const password = String(aPassword).trim();
 
-        if (Password.isValid(password, notification).hasErrors())
+        if (Password._isValid(password, notification).hasErrors())
         {
             return Result.fail(notification);
         }
         return Result.ok(new Password({ value: password }));
     }
-    static createFromHashed(aHashedPassword: string)
+    public static createFromValid(aPassword: string): Result<Password>
+    {
+        return Result.ok(new Password({ value: aPassword }));
+    }
+    public static createFromHashed(aHashedPassword: string): Result<Password>
     {
         return Result.ok(new Password({ value: aHashedPassword }));
     }
-    compareWithConfirm(aPassword: Password): Result<Password>
+    public compareWithConfirm(aPassword: Password): Result<Password>
     {
         const notification = new Notification();
 

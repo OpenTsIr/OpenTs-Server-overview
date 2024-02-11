@@ -4,28 +4,28 @@ import ValueObject from "src/Modules/Common/Main/Ts/Domain/SeedWorks/ValueObject
 
 export default class Email extends ValueObject<string>
 {
-    private static Regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    private static _regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    static INVALID_FORMAT = "فرمت ایمیل وارد شده معتبر نیست";
-    static MINIMUM_LENGTH = 6;
+    public static INVALID_FORMAT = "فرمت ایمیل وارد شده معتبر نیست";
+    public static MINIMUM_LENGTH = 6;
 
-    private static isValid(anEmail: string): boolean
+    private static _isValid(anEmail: string): boolean
     {
-        return Email.Regex.test(anEmail);
+        return Email._regex.test(anEmail);
     }
-    static createFromInput(anEmail: string): Result<Email>
+    public static createFromInput(anEmail: string): Result<Email>
     {
         const notification = new Notification();
         const email = String(anEmail).trim();
 
-        if (!Email.isValid(email))
+        if (!Email._isValid(email))
         {
             notification.addError(Email.INVALID_FORMAT);
             return Result.fail(notification);
         }
         return Result.ok(new Email({ value: email }));
     }
-    static createFromValid(anEmail: string): Result<Email>
+    public static createFromValid(anEmail: string): Result<Email>
     {
         return Result.ok(new Email({ value: anEmail }));
     }

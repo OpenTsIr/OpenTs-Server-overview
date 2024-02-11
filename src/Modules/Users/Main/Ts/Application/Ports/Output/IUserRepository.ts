@@ -7,7 +7,7 @@ export const IUserRepository = Symbol("IUserRepository").valueOf();
 export interface IUserRepository
 {
     isAccountAvailable(email: Email): Promise<boolean>;
-    registerNewUser(email: Email, hashedPassword: Password): Promise<void>;
+    registerNewUser(user: User, hashedPassword: Password): Promise<void>;
     getUserByEmailAddress(email: Email): Promise<User>;
     getUserById(userId: UserId): Promise<User>;
     verifyUser(email: Email): Promise<void>;

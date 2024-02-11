@@ -1,7 +1,9 @@
+import { PoolClient } from "pg";
+
 export const IConnection = Symbol("IConnection").valueOf();
-export interface IConnection<Pool>
+export interface IConnection
 {
-    get connection(): Promise<Pool>;
-    get pool(): Pool;
-    setupConnectionPool(): Promise<void>;
+    getConnection(): Promise<PoolClient>;
+    releaseConnection(): void;
+    isConnectionHealthy(): Promise<boolean>;
 }

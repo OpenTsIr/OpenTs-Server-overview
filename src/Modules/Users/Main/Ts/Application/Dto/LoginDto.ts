@@ -1,6 +1,6 @@
 export class LoginDto
 {
-    constructor
+    public constructor
         (
             public email: string,
             public nickname: string,

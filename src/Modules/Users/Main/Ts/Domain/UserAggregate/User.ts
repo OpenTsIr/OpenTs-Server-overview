@@ -1,3 +1,5 @@
+import { BadRequestException, PreconditionFailedException } from "@nestjs/common";
+import { VerifiedSpecification } from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/VerifiedSpecification";
 import ResetPasswordToken from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ResetPasswordToken";
 import Email from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Email";
 import Nickname from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Nickname";
@@ -5,12 +7,10 @@ import Password from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Password";
 import Roles from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Roles";
 import IAggregateRoot from "src/Modules/Common/Main/Ts/Domain/SeedWorks/IAggregateRoot";
 import EmailVerificationToken from "src/Modules/Users/Main/Ts/Domain/UserAggregate/EmailVerificationToken";
-import EmailVerificationStatus from "src/Modules/Users/Main/Ts/Domain/UserAggregate/EmailVerificationStatus";
 import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 import ConcurrencySafeEntity from "src/Modules/Common/Main/Ts/Domain/SeedWorks/ConcurrencySafeEntity";
 import NewUserRegistered from "src/Modules/Users/Main/Ts/Domain/UserAggregate/NewUserRegistered";
 import EmailVerified from "src/Modules/Users/Main/Ts/Domain/UserAggregate/EmailVerified";
-import UserLoggedIn from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserLoggedIn";
 import AuthorRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/AuthorRoleAssignedToUser";
 import ModeratorRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ModeratorRoleAssignedToUser";
 import AdminRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggregate/AdminRoleAssignedToUser";
@@ -18,8 +18,7 @@ import RootRoleAssignedToUser from "src/Modules/Users/Main/Ts/Domain/UserAggrega
 import ResetPasswordTokenIssued from "src/Modules/Users/Main/Ts/Domain/UserAggregate/ResetPasswordTokenIssued";
 import PasswordChanged from "src/Modules/Users/Main/Ts/Domain/UserAggregate/PasswordChanged";
 import UserStatus from "src/Modules/Users/Main/Ts/Domain/UserStatus";
-import { BadRequestException, PreconditionFailedException } from "@nestjs/common";
-import { VerifiedSpecification } from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/VerifiedSpecification";
+import Specification from "src/Modules/Common/Main/Ts/Domain/SeedWorks/Specification/Specification";
 
 export default class User extends ConcurrencySafeEntity<UserId> implements IAggregateRoot
 {
@@ -159,7 +158,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
 
         // )
     }
-    public verifyEmailAddress()
+    public verifyEmailAddress(): void
     {
         this.status = UserStatus.EMAIL_VERIFIED;
         this.concurrencyVersion = this.concurrencyVersion + 1;
@@ -176,7 +175,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    public makeAuthor()
+    public makeAuthor(): void
     {
         this.role = Roles.AUTHOR;
         this.concurrencyVersion = this.concurrencyVersion + 1;
@@ -193,7 +192,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    public makeModerator()
+    public makeModerator(): void
     {
         this.role = Roles.MODERATOR;
         this.concurrencyVersion = this.concurrencyVersion + 1;
@@ -210,7 +209,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    public makeAdmin()
+    public makeAdmin(): void
     {
         this.role = Roles.ADMIN;
         this.concurrencyVersion = this.concurrencyVersion + 1;
@@ -227,7 +226,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    public makeRoot()
+    public makeRoot(): void
     {
         this.role = Roles.ROOT;
         this.concurrencyVersion = this.concurrencyVersion + 1;
@@ -244,7 +243,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    public requestResettingPassword()
+    public requestResettingPassword(): void
     {
         this.resetPasswordToken = ResetPasswordToken.create().value;
         this.resetPasswordTokenIssuedAt = new Date();
@@ -263,7 +262,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    public resetPassword(aNewPassword: Password)
+    public resetPassword(aNewPassword: Password): void
     {
         this.password = aNewPassword;
         this.resetPasswordToken = null;
@@ -282,7 +281,7 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
                     )
             );
     }
-    private getSpecification()
+    private _getSpecification(): Specification<User>
     {
         switch (this.status)
         {
@@ -298,11 +297,15 @@ export default class User extends ConcurrencySafeEntity<UserId> implements IAggr
     }
     public validateInvariant(): void
     {
-        const specification = this.getSpecification();
+        const specification = this._getSpecification();
 
         if (!specification.isSatisfiedBy(this))
         {
             throw new PreconditionFailedException("امکان پردازش درخواست وجود ندارد");
         }
+    }
+    public validatePreconditions(): void
+    {
+        throw new Error("Method not implemented.");
     }
 }

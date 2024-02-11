@@ -6,11 +6,11 @@ import AssignAuthorRoleCommand from "src/Modules/Users/Main/Ts/Application/Comma
 import NullUserSpecification from "src/Modules/Users/Main/Ts/Domain/UserAggregate/Specifications/NullUserSpecification";
 import UserId from "src/Modules/Users/Main/Ts/Domain/UserAggregate/UserId";
 
-export default class AssignAuthorRole implements IAssignAuthorRoleUseCase
+export default class AssignAuthorRoleInputPort implements IAssignAuthorRoleUseCase
 {
-    constructor (@Inject(IUserRepository) private readonly _userRepository: IUserRepository)
+    public constructor (@Inject(IUserRepository) private readonly _userRepository: IUserRepository)
     { }
-    async handle(command: AssignAuthorRoleCommand): Promise<Result<void>>
+    public async handle(command: AssignAuthorRoleCommand): Promise<Result<void>>
     {
         const userIdCreationResult = UserId.createFromInput(command.userId);
 

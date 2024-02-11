@@ -4,7 +4,7 @@ import UUID from "src/Modules/Common/Main/Ts/Domain/SeedWorks/UUID";
 
 export default class UserId extends UUID
 {
-    static createFromInput(aUUID: string): Result<UserId>
+    public static createFromInput(aUUID: string): Result<UserId>
     {
         const notification = new Notification();
         const uuid = String(aUUID).trim();
@@ -17,4 +17,3 @@ export default class UserId extends UUID
         return Result.ok(new UserId({ value: uuid }));
     }
 }
- 

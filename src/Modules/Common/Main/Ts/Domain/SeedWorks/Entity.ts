@@ -30,5 +30,6 @@ export default abstract class Entity<TId extends UUID> extends IdentifiedDomainO
         }
         return false;
     }
+    public abstract validatePreconditions(): void;
     public abstract validateInvariant(): void;
 }
